@@ -19,6 +19,26 @@ bool Branje_Stevil(vector<unsigned char>& vec, const char s[]) {
 	input.close();
 	return true;
 }
+void setUpArray(vector<unsigned char>& A, vector<unsigned char>& C, int arraySize, int k) {
+	for (int i = 0; i < arraySize; i++) {
+		C[(A[i] >> k) & 1]++;
+	}
+	C[1] += C[0];
+}
+void counting_sort(vector<unsigned char> A) {
+	int arraySize = A.size();
+	int k = 0;
+
+	vector<unsigned char> B(arraySize);
+	vector<unsigned char> C(2, 0);
+
+	setUpArray(A, C, arraySize, k);
+
+	for (int i = 0; i < arraySize; i++) {
+		B[--C[(A[i] >> k) & 1]] = A[i];
+	}
+	swap(A, B);
+}
 void Izpis_Stevil(unsigned char* polje, unsigned int velikost) {
 	ofstream output("out.txt");
 
