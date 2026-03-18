@@ -31,6 +31,13 @@ void counting_sort(vector<unsigned char> A) {
 
 	vector<unsigned char> B(arraySize);
 	vector<unsigned char> C(2, 0);
+
+	setUpArray(A, C, arraySize, k);
+
+	for (int i = 0; i < arraySize; i++) {
+		B[--C[(A[i] >> k) & 1]] = A[i];
+	}
+	swap(A, B);
 }
 void Izpis_Stevil(unsigned char* polje, unsigned int velikost) {
 	ofstream output("out.txt");
