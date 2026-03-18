@@ -25,9 +25,8 @@ void setUpArray(vector<unsigned char>& A, vector<unsigned char>& C, int arraySiz
 	}
 	C[1] += C[0];
 }
-void counting_sort(vector<unsigned char> A) {
+void counting_sort(vector<unsigned char>& A, int k) {
 	int arraySize = A.size();
-	int k = 0;
 
 	vector<unsigned char> B(arraySize);
 	vector<unsigned char> C(2, 0);
