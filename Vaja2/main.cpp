@@ -19,7 +19,7 @@ bool Branje_Stevil(vector<unsigned char>& vec, const char s[]) {
 	input.close();
 	return true;
 }
-void setUpArray(vector<unsigned char>& A, vector<unsigned char>& C, int arraySize, int k) {
+void setUpArray(vector<unsigned char>& A, vector<int>& C, int arraySize, int k) {
 	for (int i = 0; i < arraySize; i++) {
 		C[(A[i] >> k) & 1]++;
 	}
@@ -29,11 +29,11 @@ void counting_sort(vector<unsigned char>& A, int k) {
 	int arraySize = A.size();
 
 	vector<unsigned char> B(arraySize);
-	vector<unsigned char> C(2, 0);
+	vector<int> C(2, 0);
 
 	setUpArray(A, C, arraySize, k);
 
-	for (int i = 0; i < arraySize; i++) {
+	for (int i = arraySize - 1; i >= 0; i--) {
 		B[--C[(A[i] >> k) & 1]] = A[i];
 	}
 	swap(A, B);
