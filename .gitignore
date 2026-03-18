@@ -11,10 +11,16 @@
 
 out.txt
 
+.vs/
 .vscode/
 .idea/
-build/
-cmake-build-*/
 Debug/
 Release/
 x64/
+x86/
+build/
+cmake-build-*/
+
+*.user
+*.suo
+*.ipch
