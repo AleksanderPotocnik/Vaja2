@@ -38,6 +38,12 @@ void counting_sort(vector<unsigned char>& A, int k) {
 	}
 	swap(A, B);
 }
+
+void radix_sort(vector<unsigned char>& A) {
+	for (int k = 0; k < 8; k++) {
+		counting_sort(A, k);
+	}
+}
 void Izpis_Stevil(unsigned char* polje, unsigned int velikost) {
 	ofstream output("out.txt");
 
@@ -50,6 +56,7 @@ int main(int argc, const char* argv[]) {
 	if (argc < 2) return 0;
 	if (!Branje_Stevil(A, argv[1])) return 0;
 
+	radix_sort(A);
 	Izpis_Stevil(A.data(), A.size());
 	return 0;
 }
