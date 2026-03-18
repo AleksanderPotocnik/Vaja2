@@ -25,6 +25,19 @@ void Izpis_Stevil(unsigned char* polje, unsigned int velikost) {
 	for (int i = 0; i < velikost; i++)
 		output << (int)polje[i] << ' ';
 }
+void setUpArray(vector<unsigned char>& A, vector<unsigned char>& C, int arraySize, int k) {
+	for (int i = 0; i < arraySize; i++) {
+		C[(A[i] >> k) & 1]++;
+	}
+	C[1] += C[0];
+}
+void counting_sort(vector<unsigned char> A) {
+	int arraySize = A.size();
+
+	vector<unsigned char> B(arraySize);
+	vector<unsigned char> C(2, 0);
+
+}
 int main(int argc, const char* argv[]) {
 	vector<unsigned char> A;
 
