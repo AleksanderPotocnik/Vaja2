@@ -25,7 +25,7 @@ void setUpArray(vector<unsigned char>& A, vector<int>& C, int arraySize, int k) 
 	}
 	C[1] += C[0];
 }
-void counting_sort(vector<unsigned char>& A, int k) {
+void countingSort(vector<unsigned char>& A, int k) {
 	int arraySize = A.size();
 
 	vector<unsigned char> B(arraySize);
@@ -39,9 +39,9 @@ void counting_sort(vector<unsigned char>& A, int k) {
 	swap(A, B);
 }
 
-void radix_sort(vector<unsigned char>& A) {
+void radixSort(vector<unsigned char>& A) {
 	for (int k = 0; k < 8; k++) {
-		counting_sort(A, k);
+		countingSort(A, k);
 	}
 }
 void Izpis_Stevil(unsigned char* polje, unsigned int velikost) {
@@ -56,7 +56,7 @@ int main(int argc, const char* argv[]) {
 	if (argc < 2) return 0;
 	if (!Branje_Stevil(A, argv[1])) return 0;
 
-	radix_sort(A);
+	radixSort(A);
 	Izpis_Stevil(A.data(), A.size());
 	return 0;
 }
