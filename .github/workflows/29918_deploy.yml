@@ -46,8 +46,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Nastvi buildx ki je potreben za buildanej image
       - name: Nastavi Docker buildx
-        uses: docker/setup/buildx-action@v3
+        uses: docker/setup-buildx-action@v3
 
       # Zgradi Docker image iz Dockerfile in ga potisne na DockerHub
       # context je mapa kjer je Dockerfile
