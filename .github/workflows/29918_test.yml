@@ -77,20 +77,6 @@ jobs:
             exit 1
           fi
 
-      # Namesti g++ ce ga ni ze namescenega
-      # Ta step se izvede samo ko matrix uporablja g++
-      - name: Namesti g++ ce je potrebno
-        if: matrix.compiler == 'g++'
-        run: |
-          which g++ || (apt-get update && apt-get install -y g++)
-
-      # Namesti clang++ ce ga ni ze namescenega
-      # Ta step se izvede samo ko matrix uporablja clang++
-      - name: Namesti clang ce je potrebno
-        if: matrix.compiler == 'clang++'
-        run: |
-          which clang++ || (apt-get update && apt-get install -y clang)
-
       # Pozene testno skripto z izbranim kompilatorjem iz matrike
       # Mozne napake doda v napaka.txt
       - name: Pozeni teste z ${{ matrix.compiler }}
