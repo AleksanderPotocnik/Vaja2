@@ -8,7 +8,6 @@ on:
     branches: [main] # branches omejuje da se sprozi samo za push na main vejo
 
 jobs:
-
   # Job za izgradnjo in objavo Docker image na DockerHub
   deploy:
     runs-on: self-hosted
@@ -31,7 +30,7 @@ jobs:
       # Preveri vsebino napaka.txt
       # Ce datoteka ni prazna pomeni da so testi padli in deploy se prekine
       - name: Preveri napaka.txt
-        run: |   
+        run: |
           if [ -s napaka.txt ]; then
             echo "Testi niso uspeli deploy preskocen."
             cat napaka.txt
@@ -46,6 +45,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Nastavi Docker buildx
+        uses: docker/setup/buildx-action@v3
 
       # Zgradi Docker image iz Dockerfile in ga potisne na DockerHub
       # context je mapa kjer je Dockerfile
