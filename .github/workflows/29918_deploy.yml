@@ -1,0 +1,57 @@
+name: Deploy
+
+# Workflow se sprozi ko se Test workflow uspesno zakljuci na main veji
+on:
+  workflow_run:
+    workflows: [Test] # workflows pove kateri workflow mora zakljuciti da se ta sprozi
+    types: [completed] # types completed pomeni da se sprozi ko je workflow zakljucen ne glede na uspeh ali neuspeh
+    branches: [main] # branches omejuje da se sprozi samo za push na main vejo
+
+jobs:
+
+  # Job za izgradnjo in objavo Docker image na DockerHub
+  deploy:
+    runs-on: self-hosted
+    # Izvede se samo ce je Test workflow uspesno zakljucil
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      # Klonira repozitorij na runner da imamo dostop do datotek
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Prenese napaka.txt artifact iz Test workflowa
+      # run-id pove kateri workflow run je ustvaril artifact
+      - name: Prenesi artifact napaka.txt
+        uses: actions/download-artifact@v4
+        with:
+          name: napaka
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Preveri vsebino napaka.txt
+      # Ce datoteka ni prazna pomeni da so testi padli in deploy se prekine
+      - name: Preveri napaka.txt
+        run: |   
+          if [ -s napaka.txt ]; then
+            echo "Testi niso uspeli deploy preskocen."
+            cat napaka.txt
+            exit 1
+          fi
+          echo "napaka.txt je prazen nadaljujem z deployem."
+
+      # Prijava na DockerHub z uporabo shranjenih secrets
+      # Secrets so nastavljeni v GitHub repozitoriju pod Settings
+      - name: Login na DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Zgradi Docker image iz Dockerfile in ga potisne na DockerHub
+      # context je mapa kjer je Dockerfile
+      - name: Zgradi in potisni Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/vaja2:latest
