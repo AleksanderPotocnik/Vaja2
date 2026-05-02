@@ -1,0 +1,102 @@
+name: Test
+
+# Workflow se sprozi ob vsakem pushu na main vejo
+on:
+  push:
+    branches: [main]
+
+jobs:
+  # Ce skripta ne obstaja zapise napako v napaka.txt in objavi kot artifact
+  preveri_teste:
+    runs-on: self-hosted
+    steps:
+      # Klonira repozitorij na runner da imamo dostop do datotek
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Preveri ce datoteka tests/test_runner.sh obstaja
+      # Ce ne obstaja javi napako in job se zakljuci z napako
+      - name: Preveri obstoj testne skripte
+        run: |
+          if [ ! -f "tests/test_runner.sh" ]; then
+            echo "Testna skripta tests/test_runner.sh ne obstaja!" >&2
+            exit 1
+          fi
+          echo "Testna skripta obstaja."
+
+      # Ustvari prazno napaka.txt ce se ni bila ustvarjena
+      # always pomeni da se ta step izvede vedno tudi ce prejsnji step ni uspel
+      - name: Ustvari napaka.txt
+        if: always()
+        run: |
+          if [ ! -f napaka.txt ]; then
+            touch napaka.txt
+          fi
+
+      # Ce je kateri prejsnji step javil napako zapisi sporocilo v napaka.txt
+      # failure pomeni da se ta step izvede samo ce je prej prislo do napake
+      - name: Shrani napako ce job ni uspel
+        if: failure()
+        run: echo "Testna skripta ne obstaja" > napaka.txt
+
+      # Objavi napaka.txt kot artifact da ga lahko prenese naslednji job
+      # always zagotovi da se artifact objavi tudi ce je job padel
+      - name: Objavi napaka.txt kot artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: napaka
+          path: napaka.txt
+
+  # Ta job se izvede samo ce je Job 1 uspesno zakljucil
+  pozeni_teste:
+    runs-on: self-hosted
+    needs: preveri_teste
+    # Matrix za testiranje z dvema razlicnima kompilatorjema
+    strategy:
+      matrix:
+        compiler: [g++, clang++]
+    steps:
+      # Klonira repozitorij na runner
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Prenese napaka.txt artifact ki ga je ustvaril Job 1
+      - name: Prenesi artifact napaka.txt
+        uses: actions/download-artifact@v4
+        with:
+          name: napaka
+
+      # Preveri vsebino napaka.txt
+      # Ce datoteka ni prazna prekine izvajanje
+      - name: Preveri napaka.txt
+        run: |
+          if [ -s napaka.txt ]; then
+            echo "Job 1 je javil napako prekinjam teste."
+            cat napaka.txt
+            exit 1
+          fi
+
+      # Namesti g++ ce ga ni ze namescenega
+      # Ta step se izvede samo ko matrix uporablja g++
+      - name: Namesti g++ ce je potrebno
+        if: matrix.compiler == 'g++'
+        run: |
+          which g++ || (apt-get update && apt-get install -y g++)
+
+      # Namesti clang++ ce ga ni ze namescenega
+      # Ta step se izvede samo ko matrix uporablja clang++
+      - name: Namesti clang ce je potrebno
+        if: matrix.compiler == 'clang++'
+        run: |
+          which clang++ || (apt-get update && apt-get install -y clang)
+
+      # Pozene testno skripto z izbranim kompilatorjem iz matrike
+      # Mozne napake doda v napaka.txt
+      - name: Pozeni teste z ${{ matrix.compiler }}
+        run: |
+          chmod +x tests/test_runner.sh
+          COMPILER=${{ matrix.compiler }} bash tests/test_runner.sh 2>> napaka.txt
+          if [ $? -ne 0 ]; then
+            exit 1
+          fi
