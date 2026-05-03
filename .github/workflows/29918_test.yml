@@ -86,3 +86,13 @@ jobs:
           if [ $? -ne 0 ]; then
             exit 1
           fi
+
+      # Ce so testi padli objavi posodobljen napaka.txt kot artifact
+      # overwrite zamenja obstoječi artifact z novim
+      - name: Objavi napaka.txt ce so testi padli
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: napaka
+          path: napaka.txt
+          overwrite: true
