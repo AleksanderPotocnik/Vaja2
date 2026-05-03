@@ -28,8 +28,8 @@ run_test() {
     fi
 }
 
-run_test "Ze sortirano" "1 2 3 4 5" "9 9 9 9 9"
-# run_test "Ze sortirano"      "1 2 3 4 5"        "1 2 3 4 5"
+# run_test "Ze sortirano" "1 2 3 4 5" "9 9 9 9 9"
+run_test "Ze sortirano"      "1 2 3 4 5"        "1 2 3 4 5"
 run_test "Obratno sortirano" "5 4 3 2 1"        "1 2 3 4 5"
 run_test "Enaka stevila"     "3 3 3 3"           "3 3 3 3"
 run_test "Eno stevilo"       "42"                "42"
