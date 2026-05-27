@@ -3,6 +3,10 @@
 #include <vector>
 using namespace std;
 
+void Test2 (){
+
+}
+
 bool Branje_Stevil(vector<unsigned char>& vec, const char s[]) {
 	ifstream input(s);
 	int st;
